@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>express-static-files</title>
+  </head>
+  <body>
+    <h1 style="text-align: center; border: 1px solid cornflowerblue">
+      public/index.html Express Static Files
+    </h1>
+    <div
+      style="border: 1px solid coral; display: flex; justify-content: center"
+    >
+      <form
+        action="https://sandbox.payfast.co.za/eng/process"
+        method="post"
+        id="myForm"
+      >
+        <h2 style="text-align: center">Form</h2>
+        <input type="hidden" name="merchant_id" value="10023264" />
+        <input type="hidden" name="merchant_key" value="0kg0prpdrqwe6" />
+        <input
+          type="hidden"
+          name="return_url"
+          value="https://78e2-105-224-29-125.ngrok.io/success"
+        />
+        <input
+          type="hidden"
+          name="cancel_url"
+          value="https://78e2-105-224-29-125.ngrok.io/cancel"
+        />
+        <input
+          type="hidden"
+          name="notify_url"
+          value="https://78e2-105-224-29-125.ngrok.io/notify"
+        />
+        <input type="hidden" name="name_first" value="Jane" />
+        <input type="hidden" name="name_last" value="Doe" />
+        <input type="hidden" name="m_payment_id" value="123456789" />
+        <input type="hidden" name="amount" value="5.00" />
+        <input type="hidden" name="item_name" value="Front End Product" />
+        <input type="submit" value="Pay Now" />
+      </form>
+    </div>
+    <script>
+      const myForm = document.querySelector("#myForm");
+
+      myForm.addEventListener("submit", async (e) => {
+        // e.preventDefault();
+
+        let data = {
+          return_url: myForm["return_url"].value,
+          cancel_url: myForm["cancel_url"].value,
+          notify_url: myForm["notify_url"].value,
+          name_first: myForm["name_first"].value,
+          name_last: myForm["name_last"].value,
+          m_payment_id: myForm["m_payment_id"].value,
+          amount: myForm["amount"].value,
+          itemName: myForm["item_name"].value,
+        };
+        console.log(data);
+
+        const prodHost = "https://78e2-105-224-29-125.ngrok.io";
+        const localHost = "http://localhost:3099";
+        const url = `${prodHost}/form`;
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        const res_data = await response.json();
+        console.log(res_data);
+      });
+    </script>
+  </body>
+</html>
