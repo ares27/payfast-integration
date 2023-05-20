@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB</title>
+    <style>
+        /* default css */
+        Body {
+            font-family: Calibri, Helvetica, sans-serif;
+        }
+
+        button {
+            background-color: #4CAF50;
+            width: 100%;
+            color: orange;
+            padding: 15px;
+            margin: 10px 0px;
+            border: none;
+            cursor: pointer;
+        }
+
+        form {
+            border: 3px solid #f1f1f1;
+        }
+
+        input[type=text],
+        input[type=password] {
+            width: 100%;
+            margin: 8px 0;
+            padding: 12px 20px;
+            display: inline-block;
+            border: 2px solid green;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            opacity: 0.7;
+        }
+
+        .container {
+            padding: 25px;
+            background-color: lightblue;
+        }
+
+        /* spinner css */
+        .lds-spinner {
+            display: none;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .lds-spinner div {
+            display: inline-block;
+            position: absolute;
+            left: 8px;
+            width: 16px;
+            background: #fff;
+            animation: lds-spinner 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+        }
+
+        .lds-spinner div:nth-child(1) {
+            left: 8px;
+            animation-delay: -0.24s;
+        }
+
+        .lds-spinner div:nth-child(2) {
+            left: 32px;
+            animation-delay: -0.12s;
+        }
+
+        .lds-spinner div:nth-child(3) {
+            left: 56px;
+            animation-delay: 0;
+        }
+
+        @keyframes lds-spinner {
+            0% {
+                top: 8px;
+                height: 64px;
+            }
+
+            50%,
+            100% {
+                top: 24px;
+                height: 32px;
+            }
+        }
+
+        /* alert message box css */
+        .alert {
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+            display: none;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div style="text-align: center;">
+        <h1> Add Title... </h1>
+    </div>
+    <form id="form">
+        <div class="container">
+            <label>Title : </label>
+            <input id="title" type="text" placeholder="Enter title..." name="data-field" required>
+            <button id="btn" type="submit">SUBMIT</button>
+            <div style="text-align: center;">
+                <div class="lds-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="alert" />
+        </div>
+    </form>
+    <br>
+    <hr>
+
+    <script>
+        const form = document.querySelector("#form")
+        const button = document.querySelector("#btn")
+        const spinner = document.querySelector(".lds-spinner")
+        const alert = document.querySelector(".alert")
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            const title = document.querySelector('#title')
+            const doc = { title: title.value }
+            button.style.display = 'none'
+            spinner.style.display = 'inline-block'
+
+            try {
+                const addDataRequest = await insertData(doc)
+                console.log(addDataRequest)
+                if (addDataRequest.status != 'success') {
+                    throw new Error(`Error inserting data`)
+                }
+
+
+                spinner.style.display = 'none'
+
+                alert.textContent = 'Title added successfully...'
+                alert.style.background = '#13c50d'
+                alert.style.display = 'block'
+
+                setTimeout(() => {
+                    title.value = ''
+                    alert.style.display = 'none'
+                    button.style.display = 'inline-block'
+                }, 3000);
+
+                return addDataRequest
+            } catch (ex) {
+                alert.textContent = ex.message
+                alert.style.display = 'block'
+                console.log(ex)
+                return ex
+            }
+        })
+
+        async function insertData(title) {
+            const settings = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(title),
+            }
+            try {
+                const response = await fetch(`/mongodb/create`, settings)
+                const data = await response.json()
+                return data
+            } catch (error) {
+                console.error(error)
+                return error
+            }
+        }
+
+    </script>
+</body>
+
+</html>
