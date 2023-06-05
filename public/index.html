@@ -6,60 +6,65 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>express-static-files</title>
+  <link rel="stylesheet" href="css/index.css">
+
 </head>
 
 <body>
-  <h1 style="text-align: center; border: 1px solid cornflowerblue">
-    public/index.html Express Static Files
-  </h1>
-  <div style="border: 1px solid coral; display: flex; justify-content: center">
-    <form action="https://sandbox.payfast.co.za/eng/process" method="post" id="myForm">
-      <h2 style="text-align: center">Form</h2>
-      <input type="hidden" name="merchant_id" value="10023264" />
-      <input type="hidden" name="merchant_key" value="0kg0prpdrqwe6" />
-      <input type="hidden" name="return_url" value="http://localhost:3099/success" />
-      <input type="hidden" name="cancel_url" value="http://localhost:3099/cancel" />
-      <input type="hidden" name="notify_url" value="http://localhost:3099/notify" />
-      <input type="hidden" name="name_first" value="Jane" />
-      <input type="hidden" name="name_last" value="Doe" />
-      <input type="hidden" name="m_payment_id" value="123456789" />
-      <input type="hidden" name="amount" value="5.00" />
-      <input type="hidden" name="item_name" value="Front End Product" />
-      <input type="submit" value="Pay Now" />
-    </form>
-  </div>
-  <script>
-    const myForm = document.querySelector("#myForm");
 
-    myForm.addEventListener("submit", async (e) => {
-      // e.preventDefault();
-      let data = {
-        return_url: myForm["return_url"].value,
-        cancel_url: myForm["cancel_url"].value,
-        notify_url: myForm["notify_url"].value,
-        name_first: myForm["name_first"].value,
-        name_last: myForm["name_last"].value,
-        m_payment_id: myForm["m_payment_id"].value,
-        amount: myForm["amount"].value,
-        itemName: myForm["item_name"].value,
-      };
-      // console.log(data);
+  <form id="regForm" action="">
 
-      const prodHost = "https://78e2-105-224-29-125.ngrok.io";
-      const localHost = "http://localhost:3099";
-      const url = `${localHost}/form`;
+    <h1>AIRTIME</h1>
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const res_data = await response.json();
-      console.log(res_data);
-    });
-  </script>
+    <!-- One "tab" for each step in the form: -->
+    <div class="tab">
+      <!-- <p><input placeholder="NETWORK" oninput="this.className = ''"></p> -->
+      <label for="network">NETWORK:</label>
+      <select name="network" id="network" oninput="this.className = ''">
+        <option value="">-- Choose Network --</option>
+        <option value="branson">Branson</option>
+        <option value="cellc">Cell C</option>
+        <option value="eskom">Eskom</option>
+        <option value="heita">8.ta</option>
+        <option value="mtn">MTN</option>
+        <option value="vodacom">Vodacom</option>
+        <option value="worldcall">World Call</option>
+      </select>
+
+      <label for="voucher">VOUCHER:</label>
+      <select id="voucher" oninput="this.className = ''" />
+      <p><input id="phone" placeholder="Phone..." oninput="this.className = ''"></p>
+
+    </div>
+
+
+
+    <div class="tab">
+      <ul id="ul">
+
+      </ul>
+    </div>
+
+    <div style="overflow:auto;">
+      <div style="float:right;">
+        <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+        <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+        <button type="submit" id="submitBtn">SUBMIT</button>
+      </div>
+    </div>
+
+    <!-- Circles which indicates the steps of the form: -->
+    <div style="text-align:center;margin-top:40px;">
+      <span class="step"></span>
+      <span class="step"></span>
+      <!-- <span class="step"></span>
+      <span class="step"></span> -->
+    </div>
+
+  </form>
+  <script defer src="js/multi-step-form.js"></script>
+  <script defer src="js/freepaid-pub.js"></script>
+
 </body>
 
 </html>

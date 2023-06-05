@@ -42,7 +42,7 @@ router
     })
     .get('/html', (req, res) => {
         localhost = "http://localhost:3099";
-        nghost = "https://087a-105-186-219-244.ngrok-free.app";
+        nghost = "https://cb81-105-186-219-244.ngrok-free.app";
 
         const myData = [];
         // Merchant details
@@ -59,6 +59,55 @@ router
         myData["m_payment_id"] = "1234";
         myData["amount"] = "5.00";
         myData["item_name"] = "Order#123";
+
+        // Generate signature
+        const myPassphrase = "prepaid-app-123";
+        myData["signature"] = payfast.generateSignature(myData, myPassphrase);
+        console.log(myData);
+        const pfHost = "sandbox.payfast.co.za";
+        let htmlForm = `<form action="https://${pfHost}/eng/process" method="post">`;
+        for (let key in myData) {
+            if (myData.hasOwnProperty(key)) {
+                value = myData[key];
+                if (value !== "") {
+                    htmlForm += `<input name="${key}" type="hidden" value="${value.trim()}" />`;
+                }
+            }
+        }
+
+        htmlForm += '<input type="submit" value="Pay Now" /></form>';
+
+        res.send(htmlForm);
+    })
+    .get('/server-payfast-form', (req, res) => {
+        localhost = "http://localhost:3099";
+        nghost = "https://32c6-105-184-145-133.ngrok-free.app";
+
+        const myData = [];
+        // Merchant details
+        myData["merchant_id"] = "10023264";
+        myData["merchant_key"] = "0kg0prpdrqwe6";
+        myData["return_url"] = `${nghost}/success`;
+        myData["cancel_url"] = `${nghost}/cancel`;
+        myData["notify_url"] = `${nghost}/notify`
+        // Buyer details
+        // myData["name_first"] = "First Name";
+        // myData["name_last"] = "Last Name";
+        // myData["email_address"] = "test@test.com";
+        myData["cell_number"] = req.query.cell_number;
+        // Transaction details
+        myData["m_payment_id"] = "12354";
+        // myData["m_payment_id"] = Math.floor(Math.random() * 1000) + 1;
+        // myData["amount"] = "5.00";
+        myData["amount"] = req.query.amount;
+        // myData["item_name"] = "Order#123";
+        myData["item_name"] = req.query.item_name;
+        // myData["item_description"] = req.query.item_name;
+        myData["custom_str1"] = req.query.cell_number;
+        myData["custom_str2"] = req.query.network;
+        // custom_str3 is the count of the items aka quantity 
+        myData["custom_str3"] = "1";
+
 
         // Generate signature
         const myPassphrase = "prepaid-app-123";
@@ -103,9 +152,13 @@ router
     })
     .post("/notify", urlencodedParser, (req, res) => {
         const pfData = JSON.parse(JSON.stringify(req.body));
-        console.log("incoming data...");
-        console.log(pfData);
-        console.log("incoming data...");
+        // console.log("incoming data...");
+        // console.log(pfData);
+        // console.log("incoming data...");
+
+        let payload = []
+        pfData.payment_status === "COMPLETE" ? payload.push(pfData) : null
+        console.log(payload);
 
 
         let pfParamString = "";
@@ -118,7 +171,7 @@ router
 
         // Remove last ampersand
         pfParamString = pfParamString.slice(0, -1);
-        console.log(pfParamString);
+        // console.log(pfParamString);
 
         const passPhrase = 'prepaid-app-123';
         const check1 = payfast.pfValidSignature(pfData, pfParamString, passPhrase);
@@ -143,32 +196,8 @@ router
             console.log('Some checks have failed, check payment manually and log for investigation');
         }
 
-        res.send({
-            pfParamString: pfParamString,
-            check1: check1,
-            check2: check2,
-            check3: check3,
-            check4: check4,
-        })
-        // res.send(pfParamString);
+        res.send(payload)
 
-        // console.log("==req==")
-        // console.log(req)
-        // console.log("==ITN Received==")
-        // console.log({ body: req.body })
-        // let payment = {
-        //     payment_id: req.body.pf_payment_id,
-        //     status: req.body.payment_status,
-        //     orderName: req.body.item_name,
-        //     gross: req.body.amount_gross,
-        //     fee: req.body.amount_fee,
-        //     net: req.body.amount_net,
-        //     name: req.body.name_first,
-        //     last_name: req.body.name_last,
-        //     signature: req.body.signature,
-        // };
-        // console.log("payment: " + JSON.stringify(payment))
-        // res.send(`<p>${payment}<p>`)
     })
 
 

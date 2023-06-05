@@ -1,12 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>express-static-files-success</title>
-  </head>
-  <body>
-    <h1 style="color: green">Success</h1>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>express-static-files-success</title>
+</head>
+
+<body>
+  <h1 style="color: green">Success</h1>
+  <pre></pre>
+  <script>
+
+    window.onload = () => {
+      console.log("fetching order...");
+      setTimeout(async () => {
+        const order = await fetchOrder("2023060409530172")
+        console.log(order)
+        document.getElementsByTagName('pre')[0].textContent = JSON.stringify(order, null, 2)
+      }, 1000)
+
+    }
+
+    async function fetchOrder(orderno) {
+      try {
+        const orderNo = { orderno }
+        const response = await fetch("/freepaid/fetchOrder", {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(orderNo)
+        });
+        const res_data = await response.json();
+        // console.log(res_data);
+        return res_data;
+      } catch (ex) {
+        console.log(ex.message)
+        res.send(ex.message)
+      }
+    }
+
+  </script>
+
+</body>
+
 </html>
